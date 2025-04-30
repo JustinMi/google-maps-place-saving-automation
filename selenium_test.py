@@ -78,5 +78,12 @@ active_element = driver.switch_to.active_element  # Get the currently selected (
 active_element.send_keys(text_to_enter)
 print(f"Entered text: {text_to_enter}")
 
+# Click the "Done" button
+done_button = WebDriverWait(driver, 10).until(
+    EC.element_to_be_clickable((By.CSS_SELECTOR, 'button.okDpye.PpaGLb.mta2Ab'))
+)
+done_button.click()
+print("Clicked the 'Done' button.")
+
 # Close the browser
 driver.quit()
