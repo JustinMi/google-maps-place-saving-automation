@@ -4,11 +4,13 @@ import undetected_chromedriver as uc
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
 import time
 
 CHROME_PROFILE_PATH = os.path.expanduser("~/Library/Application Support/Google/Chrome")
 PROFILE_DIRECTORY = "Default"
-CSV_FILE_PATH = "Takeout/Saved/Favorite places.csv"
+CSV_FILE_PATH = "Takeout/Saved/Want to go.csv"
+CATEGORY = "Want to go"
 
 def initialize_webdriver(profile_path: str, profile_directory: str) -> uc.Chrome:
     """
@@ -35,17 +37,19 @@ def initialize_webdriver(profile_path: str, profile_directory: str) -> uc.Chrome
 
     return driver
 
-def save_to_favorites(driver, title: str, url: str, note: str = None):
+def save_to_category(driver, category: str, title: str, url: str, note: str = None):
     """
-    Save a location to Favorites on Google Maps and optionally add a note.
+    Save a location to a category on Google Maps and optionally add a note.
 
     Args:
         driver: The WebDriver instance.
+        category: The category to save the location under.
+        title: The title of the location.
         url: The URL of the location to save.
         note: The optional note to add to the location.
     """
     print("*" * 50)
-    print(f"Saving '{title}' to Favorites...")
+    print(f"Saving '{title}' to {category}...")
 
     # Open a webpage
     driver.get(url)
@@ -58,12 +62,18 @@ def save_to_favorites(driver, title: str, url: str, note: str = None):
     save_button.click()
     print("Clicked the Save button.")
 
-    # Click the "Favorites" button
-    favorites_button = WebDriverWait(driver, 10).until(
-        EC.element_to_be_clickable((By.CSS_SELECTOR, 'div[aria-checked="false"].MMWRwe.fxNQSd'))
+    # Click the "Want to go" button
+    want_to_go_button = WebDriverWait(driver, 10).until(
+        EC.element_to_be_clickable((By.CSS_SELECTOR, 'div[aria-checked="false"].MMWRwe.fxNQSd[data-index="1"]'))
     )
-    favorites_button.click()
-    print("Clicked the Favorites button.")
+    want_to_go_button.click()
+    print(f"Clicked the {category} button.")
+
+    # Wait for the "Saved" confirmation message
+    WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.CSS_SELECTOR, 'button[aria-label="Saved"][data-value="Saved"]'))
+    )
+    print("Saved.")
 
     if note:
         # Handle the intercepting element if it exists
@@ -76,16 +86,16 @@ def save_to_favorites(driver, title: str, url: str, note: str = None):
         except TimeoutException:
             print("Intercepting element did not appear. Proceeding without clicking it.")
 
-        # Expand Favorites details section
-        favorites_details_dropdown_carrot = WebDriverWait(driver, 10).until(
+        # Expand the category's details section
+        want_to_go_details_dropdown_carrot = WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.CSS_SELECTOR, 'button[aria-label="Show place lists details"][data-value="Show place lists details"]'))
         )
-        favorites_details_dropdown_carrot.click()
-        print("Clicked the Favorites details dropdown.")
+        want_to_go_details_dropdown_carrot.click()
+        print(f"Clicked the {category} details dropdown.")
 
         # Open the "Add Note" modal
         add_note_button = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, 'button[aria-label="Add note in Favorites"]'))
+            EC.element_to_be_clickable((By.CSS_SELECTOR, f'button[aria-label="Add note in {category}"]'))
         )
         add_note_button.click()
         print("Opened Add Note modal.")
@@ -121,7 +131,7 @@ with open(CSV_FILE_PATH, mode="r", encoding="utf-8") as csv_file:
         url = row["URL"]
 
         # Print the contents of the current row
-        save_to_favorites(driver, title, url, note)
+        save_to_category(driver, CATEGORY, title, url, note)
 
 # Close the browser
 driver.quit()
