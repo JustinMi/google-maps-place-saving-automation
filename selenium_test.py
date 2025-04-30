@@ -42,20 +42,17 @@ print("WebDriver initialized with Chrome profile: " + CHROME_PROFILE_PATH)
 driver.get("https://www.google.com/maps/place/Erge+Chicken+Rice+Noodles/data=!4m2!3m1!1s0x3720ca6aafeeae0f:0xea6df3e75ae9148c")
 
 # Click the "Save" button
-save_button_wait = WebDriverWait(driver, 10)  # Wait up to 10 seconds
-save_button = save_button_wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'button[aria-label="Save"][data-value="Save"]')))
+save_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'button[aria-label="Save"][data-value="Save"]')))
 save_button.click()
 print("Clicked the Save button.")
 
 # Click the "Favorites" button
-favorites_button_wait = WebDriverWait(driver, 10)  # Wait up to 10 seconds
-favorites_button = favorites_button_wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'div[aria-checked="false"].MMWRwe.fxNQSd')))
+favorites_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'div[aria-checked="false"].MMWRwe.fxNQSd')))
 favorites_button.click()
 print("Clicked the Favorites button.")
 
 # Expand Favorites details section
-favorites_details_dropdown_carrot_wait = WebDriverWait(driver, 10)  # Wait up to 10 seconds
-favorites_details_dropdown_carrot = favorites_details_dropdown_carrot_wait.until(
+favorites_details_dropdown_carrot = WebDriverWait(driver, 10).until(
     EC.element_to_be_clickable((By.CSS_SELECTOR, 'button[aria-label="Show place lists details"][data-value="Show place lists details"]'))
 )
 favorites_details_dropdown_carrot.click()
