@@ -37,6 +37,21 @@ def initialize_webdriver(profile_path: str, profile_directory: str) -> uc.Chrome
 
     return driver
 
+def log_error(action: str, title: str, url: str):
+    """
+    Log an error message to a file if the save button is not found.
+
+    Args:
+        action: A string description of the action that caused the error.
+        title: The title of the location.
+        url: The URL of the location.
+    """
+    print("Error. Skipping.")
+        
+    # Print failed items to a file
+    with open("error_log.txt", "a") as error_file:
+        error_file.write(f"Error for {title} at {url} while doing {action}\n")
+
 def save_to_category(driver, category: str, title: str, url: str, note: str = None):
     """
     Save a location to a category on Google Maps and optionally add a note.
@@ -52,28 +67,41 @@ def save_to_category(driver, category: str, title: str, url: str, note: str = No
     print(f"Saving '{title}' to {category}...")
 
     # Open a webpage
+    print(f"Navigating to URL: {url}")
     driver.get(url)
     print(f"Navigated to URL: {url}")
 
     # Click the "Save" button
-    save_button = WebDriverWait(driver, 10).until(
-        EC.element_to_be_clickable((By.CSS_SELECTOR, 'button[aria-label="Save"][data-value="Save"]'))
-    )
-    save_button.click()
-    print("Clicked the Save button.")
+    try:
+        save_button = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, 'button[aria-label="Save"][data-value="Save"]'))
+        )
+        save_button.click()
+        print("Clicked the Save button.")
+    except TimeoutException:
+        log_error("clicking Save button", title, url)
+        return
 
     # Click the "Want to go" button
-    want_to_go_button = WebDriverWait(driver, 10).until(
-        EC.element_to_be_clickable((By.CSS_SELECTOR, 'div[aria-checked="false"].MMWRwe.fxNQSd[data-index="1"]'))
-    )
-    want_to_go_button.click()
-    print(f"Clicked the {category} button.")
+    try:
+        want_to_go_button = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, 'div[aria-checked="false"].MMWRwe.fxNQSd[data-index="1"]'))
+        )
+        want_to_go_button.click()
+        print(f"Clicked the {category} button.")
+    except TimeoutException:
+        log_error(f"clicking {category} button", title, url)
+        return
 
     # Wait for the "Saved" confirmation message
-    WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.CSS_SELECTOR, 'button[aria-label="Saved"][data-value="Saved"]'))
-    )
-    print("Saved.")
+    try:
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, 'button[aria-label="Saved"][data-value="Saved"]'))
+        )
+        print("Saved.")
+    except TimeoutException:
+        log_error("waiting for Saved confirmation", title, url)
+        return
 
     if note:
         # Handle the intercepting element if it exists
@@ -87,18 +115,26 @@ def save_to_category(driver, category: str, title: str, url: str, note: str = No
             print("Intercepting element did not appear. Proceeding without clicking it.")
 
         # Expand the category's details section
-        want_to_go_details_dropdown_carrot = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, 'button[aria-label="Show place lists details"][data-value="Show place lists details"]'))
-        )
-        want_to_go_details_dropdown_carrot.click()
-        print(f"Clicked the {category} details dropdown.")
+        try:
+            want_to_go_details_dropdown_carrot = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.CSS_SELECTOR, 'button[aria-label="Show place lists details"][data-value="Show place lists details"]'))
+            )
+            want_to_go_details_dropdown_carrot.click()
+            print(f"Clicked the {category} details dropdown.")
+        except TimeoutException:
+            log_error(f"expanding {category} details dropdown", title, url)
+            return
 
         # Open the "Add Note" modal
-        add_note_button = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, f'button[aria-label="Add note in {category}"]'))
-        )
-        add_note_button.click()
-        print("Opened Add Note modal.")
+        try:
+            add_note_button = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.CSS_SELECTOR, f'button[aria-label="Add note in {category}"]'))
+            )
+            add_note_button.click()
+            print("Opened Add Note modal.")
+        except TimeoutException:
+            log_error("clicking Add Note button", title, url)
+            return
 
         time.sleep(0.5)  # gimme a sec to react
 
@@ -108,17 +144,25 @@ def save_to_category(driver, category: str, title: str, url: str, note: str = No
         print(f"Entered text: {note}")
 
         # Click the "Done" button
-        done_button = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, 'button.okDpye.PpaGLb.mta2Ab'))
-        )
-        done_button.click()
-        print("Clicked the 'Done' button.")
+        try:
+            done_button = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.CSS_SELECTOR, 'button.okDpye.PpaGLb.mta2Ab'))
+            )
+            done_button.click()
+            print("Clicked the 'Done' button.")
+        except TimeoutException:
+            log_error("clicking 'Done' button", title, url)
+            return
 
         # Wait for Edit Note to be clickable, indicating the note was saved
-        WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, f'button[aria-label="Edit note in {category}"]'))
-        )
-        print("Note saved.")
+        try:
+            WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.CSS_SELECTOR, f'button[aria-label="Edit note in {category}"]'))
+            )
+            print("Note saved.")
+        except TimeoutException:
+            log_error("waiting for Edit Note button (saving note)", title, url)
+            return
 
     time.sleep(0.5) # load it
 
