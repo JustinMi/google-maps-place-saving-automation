@@ -53,5 +53,13 @@ favorites_button = favorites_button_wait.until(EC.element_to_be_clickable((By.CS
 favorites_button.click()
 print("Clicked the Favorites button.")
 
+# Expand Favorites details section
+favorites_details_dropdown_carrot_wait = WebDriverWait(driver, 10)  # Wait up to 10 seconds
+favorites_details_dropdown_carrot = favorites_details_dropdown_carrot_wait.until(
+    EC.element_to_be_clickable((By.CSS_SELECTOR, 'button[aria-label="Show place lists details"][data-value="Show place lists details"]'))
+)
+favorites_details_dropdown_carrot.click()
+print("Clicked the Favorites details dropdown.")
+
 # Close the browser
 driver.quit()
