@@ -69,7 +69,14 @@ print("Clicked the Favorites details dropdown.")
 add_note_button = WebDriverWait(driver, 10).until(
     EC.element_to_be_clickable((By.CSS_SELECTOR, 'button[aria-label="Add note in Favorites"]'))
 )
+add_note_button.click()
 print("Opened Add Note modal.")
+
+# Enter text into the selected text box
+text_to_enter = "This is my note."
+active_element = driver.switch_to.active_element  # Get the currently selected (active) element
+active_element.send_keys(text_to_enter)
+print(f"Entered text: {text_to_enter}")
 
 # Close the browser
 driver.quit()
