@@ -67,9 +67,13 @@ def save_to_category(driver, category: str, title: str, url: str, note: str = No
     print(f"Saving '{title}' to {category}...")
 
     # Open a webpage
-    print(f"Navigating to URL: {url}")
-    driver.get(url)
-    print(f"Navigated to URL: {url}")
+    try:
+        print(f"Navigating to URL: {url}")
+        driver.get(url)
+        print(f"Navigated to URL: {url}")
+    except Exception as e:
+        log_error("navigating to URL", title, url)
+        return
 
     # Click the "Save" button
     try:
@@ -139,9 +143,13 @@ def save_to_category(driver, category: str, title: str, url: str, note: str = No
         time.sleep(0.5)  # gimme a sec to react
 
         # Enter text into the selected text box
-        active_element = driver.switch_to.active_element  # Get the currently selected (active) element
-        active_element.send_keys(note)
-        print(f"Entered text: {note}")
+        try:
+            active_element = driver.switch_to.active_element  # Get the currently selected (active) element
+            active_element.send_keys(note)
+            print(f"Entered text: {note}")
+        except Exception as e:
+            log_error(f"entering text {e} into note box", title, url)
+            return
 
         # Click the "Done" button
         try:
