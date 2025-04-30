@@ -4,7 +4,7 @@ import undetected_chromedriver as uc
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-
+import time
 
 CHROME_PROFILE_PATH = os.path.expanduser("~/Library/Application Support/Google/Chrome")
 PROFILE_DIRECTORY = "Default"
@@ -35,7 +35,7 @@ def initialize_webdriver(profile_path: str, profile_directory: str) -> uc.Chrome
 
     return driver
 
-def save_to_favorites(driver, url: str, note: str = None):
+def save_to_favorites(driver, title: str, url: str, note: str = None):
     """
     Save a location to Favorites on Google Maps and optionally add a note.
 
@@ -44,6 +44,9 @@ def save_to_favorites(driver, url: str, note: str = None):
         url: The URL of the location to save.
         note: The optional note to add to the location.
     """
+    print("*" * 50)
+    print(f"Saving '{title}' to Favorites...")
+
     # Open a webpage
     driver.get(url)
     print(f"Navigated to URL: {url}")
@@ -84,7 +87,7 @@ def save_to_favorites(driver, url: str, note: str = None):
         add_note_button.click()
         print("Opened Add Note modal.")
 
-        time.sleep(5)  # gimme a sec to react
+        time.sleep(3)  # gimme a sec to react
 
         # Enter text into the selected text box
         active_element = driver.switch_to.active_element  # Get the currently selected (active) element
@@ -113,7 +116,7 @@ with open(CSV_FILE_PATH, mode="r", encoding="utf-8") as csv_file:
         url = row["URL"]
 
         # Print the contents of the current row
-        save_to_favorites(driver, url, note)
+        save_to_favorites(driver, title, url, note)
 
 # Close the browser
 driver.quit()
