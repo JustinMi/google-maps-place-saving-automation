@@ -51,6 +51,13 @@ favorites_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((B
 favorites_button.click()
 print("Clicked the Favorites button.")
 
+# Handle the intercepting element
+intercepting_element = WebDriverWait(driver, 10).until(
+    EC.element_to_be_clickable((By.CSS_SELECTOR, 'div.EoqU6d'))
+)
+intercepting_element.click()
+print("Clicked the intercepting element.")
+
 # Expand Favorites details section
 favorites_details_dropdown_carrot = WebDriverWait(driver, 10).until(
     EC.element_to_be_clickable((By.CSS_SELECTOR, 'button[aria-label="Show place lists details"][data-value="Show place lists details"]'))
