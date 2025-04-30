@@ -66,12 +66,15 @@ def save_to_favorites(driver, title: str, url: str, note: str = None):
     print("Clicked the Favorites button.")
 
     if note:
-        # Handle the intercepting element
-        intercepting_element = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, 'div.EoqU6d'))
-        )
-        intercepting_element.click()
-        print("Clicked the intercepting element.")
+        # Handle the intercepting element if it exists
+        try:
+            intercepting_element = WebDriverWait(driver, 5).until(
+                EC.element_to_be_clickable((By.CSS_SELECTOR, 'div.EoqU6d'))
+            )
+            intercepting_element.click()
+            print("Clicked the intercepting element.")
+        except TimeoutException:
+            print("Intercepting element did not appear. Proceeding without clicking it.")
 
         # Expand Favorites details section
         favorites_details_dropdown_carrot = WebDriverWait(driver, 10).until(
@@ -87,7 +90,7 @@ def save_to_favorites(driver, title: str, url: str, note: str = None):
         add_note_button.click()
         print("Opened Add Note modal.")
 
-        time.sleep(3)  # gimme a sec to react
+        time.sleep(0.5)  # gimme a sec to react
 
         # Enter text into the selected text box
         active_element = driver.switch_to.active_element  # Get the currently selected (active) element
@@ -100,6 +103,8 @@ def save_to_favorites(driver, title: str, url: str, note: str = None):
         )
         done_button.click()
         print("Clicked the 'Done' button.")
+
+    time.sleep(0.5) # load it
 
 # Initialize the WebDriver
 print("Initializing WebDriver with Chrome profile...")
