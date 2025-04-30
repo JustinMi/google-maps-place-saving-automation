@@ -114,6 +114,12 @@ def save_to_category(driver, category: str, title: str, url: str, note: str = No
         done_button.click()
         print("Clicked the 'Done' button.")
 
+        # Wait for Edit Note to be clickable, indicating the note was saved
+        WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, f'button[aria-label="Edit note in {category}"]'))
+        )
+        print("Note saved.")
+
     time.sleep(0.5) # load it
 
 # Initialize the WebDriver
