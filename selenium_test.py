@@ -58,5 +58,11 @@ favorites_details_dropdown_carrot = WebDriverWait(driver, 10).until(
 favorites_details_dropdown_carrot.click()
 print("Clicked the Favorites details dropdown.")
 
+# Open the "Add Note" modal
+add_note_button = WebDriverWait(driver, 10).until(
+    EC.element_to_be_clickable((By.CSS_SELECTOR, 'button[aria-label="Add note in Favorites"]'))
+)
+print("Opened Add Note modal.")
+
 # Close the browser
 driver.quit()
