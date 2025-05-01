@@ -7,10 +7,12 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 import time
 
+CATEGORY = "New York" # Change this to the desired category. It needs to already exist in your Google Maps.
+DATA_INDEX = 4 # Change this to the index of the category in the list of categories. It's 0-indexed.
 CHROME_PROFILE_PATH = os.path.expanduser("~/Library/Application Support/Google/Chrome")
 PROFILE_DIRECTORY = "Default"
-CSV_FILE_PATH = "Takeout/Saved/Want to go.csv"
-CATEGORY = "Want to go"
+CSV_FILE_PATH = f"Takeout/Saved/{CATEGORY}.csv"
+
 
 def initialize_webdriver(profile_path: str, profile_directory: str) -> uc.Chrome:
     """
@@ -86,12 +88,12 @@ def save_to_category(driver, category: str, title: str, url: str, note: str = No
         log_error("clicking Save button", title, url)
         return
 
-    # Click the "Want to go" button
+    # Click the category button
     try:
-        want_to_go_button = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, 'div[aria-checked="false"].MMWRwe.fxNQSd[data-index="1"]'))
+        category_button = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, f'div[aria-checked="false"].MMWRwe.fxNQSd[data-index="{DATA_INDEX}"]'))
         )
-        want_to_go_button.click()
+        category_button.click()
         print(f"Clicked the {category} button.")
     except TimeoutException:
         log_error(f"clicking {category} button", title, url)
@@ -172,7 +174,7 @@ def save_to_category(driver, category: str, title: str, url: str, note: str = No
             log_error("waiting for Edit Note button (saving note)", title, url)
             return
 
-    time.sleep(0.5) # load it
+    time.sleep(0.5) # Pause to allow for any animations or transitions
 
 # Initialize the WebDriver
 print("Initializing WebDriver with Chrome profile...")
