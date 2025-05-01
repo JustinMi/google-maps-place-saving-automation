@@ -25,7 +25,6 @@ def initialize_webdriver(profile_path: str, profile_directory: str) -> uc.Chrome
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--no-first-run")
     options.add_argument("--no-default-browser-check")
-    # options.add_argument("--remote-debugging-port=9222")
     options.debugger_address = "127.0.0.1:9222"
 
     print("Using Chrome profile: " + profile_path)
