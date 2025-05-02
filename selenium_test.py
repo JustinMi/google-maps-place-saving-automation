@@ -7,7 +7,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 import time
 
-CATEGORY = "New York" # Change this to the desired category. It needs to already exist in your Google Maps.
+CATEGORY = "Alps driving roads" # Change this to the desired category. It needs to already exist in your Google Maps.
 DATA_INDEX = 4 # Change this to the index of the category in the list of categories. It's 0-indexed.
 CHROME_PROFILE_PATH = os.path.expanduser("~/Library/Application Support/Google/Chrome")
 PROFILE_DIRECTORY = "Default"
