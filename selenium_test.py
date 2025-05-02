@@ -7,11 +7,11 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 import time
 
-CATEGORY = "Alps driving roads" # Change this to the desired category. It needs to already exist in your Google Maps.
-DATA_INDEX = 4 # Change this to the index of the category in the list of categories. It's 0-indexed.
-CHROME_PROFILE_PATH = os.path.expanduser("~/Library/Application Support/Google/Chrome")
-PROFILE_DIRECTORY = "Default"
-CSV_FILE_PATH = f"Takeout/Saved/{CATEGORY}.csv"
+LIST_NAME = "Alps driving roads" # Change this to the desired list you wanna save locations to. It needs to already exist in your Google Maps.
+LIST_INDEX = 4 # Change this to the index of the list in the "save location" dropdown. It's 0-indexed.
+CHROME_PROFILE_PATH = os.path.expanduser("~/Library/Application Support/Google/Chrome") # Change this to the path of your Chrome profile. This is the default path for macOS.
+CHROME_PROFILE_DIRECTORY = "Default" # Change this to the name of your Chrome profile directory. This is the default profile directory.
+CSV_FILE_PATH = f"Takeout/Saved/{LIST_NAME}.csv" # Change this to the path of your CSV file. This is the default path for Google Maps Takeout.
 
 
 def initialize_webdriver(profile_path: str, profile_directory: str) -> uc.Chrome:
@@ -53,19 +53,19 @@ def log_error(action: str, title: str, url: str):
     with open("error_log.txt", "a") as error_file:
         error_file.write(f"Error for {title} at {url} while doing {action}\n")
 
-def save_to_category(driver, category: str, title: str, url: str, note: str = None):
+def save_to_list(driver, list_name: str, title: str, url: str, note: str = None):
     """
-    Save a location to a category on Google Maps and optionally add a note.
+    Save a location to a list on Google Maps and optionally add a note.
 
     Args:
         driver: The WebDriver instance.
-        category: The category to save the location under.
+        list_name: The list to save the location under.
         title: The title of the location.
         url: The URL of the location to save.
         note: The optional note to add to the location.
     """
     print("*" * 50)
-    print(f"Saving '{title}' to {category}...")
+    print(f"Saving '{title}' to {list_name}...")
 
     # Open a webpage
     try:
@@ -87,15 +87,15 @@ def save_to_category(driver, category: str, title: str, url: str, note: str = No
         log_error("clicking Save button", title, url)
         return
 
-    # Click the category button
+    # Click the list button
     try:
-        category_button = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, f'div[aria-checked="false"].MMWRwe.fxNQSd[data-index="{DATA_INDEX}"]'))
+        list_button = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, f'div[aria-checked="false"].MMWRwe.fxNQSd[data-index="{LIST_INDEX}"]'))
         )
-        category_button.click()
-        print(f"Clicked the {category} button.")
+        list_button.click()
+        print(f"Clicked the {list_name} button.")
     except TimeoutException:
-        log_error(f"clicking {category} button", title, url)
+        log_error(f"clicking {list_name} button", title, url)
         return
 
     # Wait for the "Saved" confirmation message
@@ -119,21 +119,21 @@ def save_to_category(driver, category: str, title: str, url: str, note: str = No
         except TimeoutException:
             print("Intercepting element did not appear. Proceeding without clicking it.")
 
-        # Expand the category's details section
+        # Expand the saved item's details section
         try:
             want_to_go_details_dropdown_carrot = WebDriverWait(driver, 10).until(
                 EC.element_to_be_clickable((By.CSS_SELECTOR, 'button[aria-label="Show place lists details"][data-value="Show place lists details"]'))
             )
             want_to_go_details_dropdown_carrot.click()
-            print(f"Clicked the {category} details dropdown.")
+            print(f"Clicked the {list_name} details dropdown.")
         except TimeoutException:
-            log_error(f"expanding {category} details dropdown", title, url)
+            log_error(f"expanding {list_name} details dropdown", title, url)
             return
 
         # Open the "Add Note" modal
         try:
             add_note_button = WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable((By.CSS_SELECTOR, f'button[aria-label="Add note in {category}"]'))
+                EC.element_to_be_clickable((By.CSS_SELECTOR, f'button[aria-label="Add note in {list_name}"]'))
             )
             add_note_button.click()
             print("Opened Add Note modal.")
@@ -141,7 +141,7 @@ def save_to_category(driver, category: str, title: str, url: str, note: str = No
             log_error("clicking Add Note button", title, url)
             return
 
-        time.sleep(0.5)  # gimme a sec to react
+        time.sleep(0.5)  # Pause to allow for any animations or transitions
 
         # Enter text into the selected text box
         try:
@@ -166,7 +166,7 @@ def save_to_category(driver, category: str, title: str, url: str, note: str = No
         # Wait for Edit Note to be clickable, indicating the note was saved
         try:
             WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable((By.CSS_SELECTOR, f'button[aria-label="Edit note in {category}"]'))
+                EC.element_to_be_clickable((By.CSS_SELECTOR, f'button[aria-label="Edit note in {list_name}"]'))
             )
             print("Note saved.")
         except TimeoutException:
@@ -177,7 +177,7 @@ def save_to_category(driver, category: str, title: str, url: str, note: str = No
 
 # Initialize the WebDriver
 print("Initializing WebDriver with Chrome profile...")
-driver = initialize_webdriver(CHROME_PROFILE_PATH, PROFILE_DIRECTORY)
+driver = initialize_webdriver(CHROME_PROFILE_PATH, CHROME_PROFILE_DIRECTORY)
 print("WebDriver initialized with Chrome profile: " + CHROME_PROFILE_PATH)
 
 # Open the CSV file and read it line by line
@@ -190,7 +190,7 @@ with open(CSV_FILE_PATH, mode="r", encoding="utf-8") as csv_file:
         url = row["URL"]
 
         # Print the contents of the current row
-        save_to_category(driver, CATEGORY, title, url, note)
+        save_to_list(driver, LIST_NAME, title, url, note)
 
 # Close the browser
 driver.quit()
