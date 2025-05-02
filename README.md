@@ -1,6 +1,8 @@
 # Google Maps Place Saving Automation
 
-This project automates the process of saving a list of places from a CSV file (generated from Google Takeout) to Google Maps using Selenium and `undetected-chromedriver`.
+This project automates the process of saving a list of places from a CSV file (e.g. generated from Google Takeout) to Google Maps using Selenium and `undetected-chromedriver`. 
+
+This was useful for me when I had to transfer 2000 saved places from one Google account to another. Google doesn't have a turnkey way to do this, so I exported my data from my old account using Google Takeout then used this script to save it to my new account. 
 
 ## Prerequisites
 
