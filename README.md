@@ -33,20 +33,26 @@ pip install selenium undetected-chromedriver
    CHROME_PROFILE_PATH = "~/Library/Application Support/Google/Chrome"
    PROFILE_DIRECTORY = "Default"
 
-### Update the Category:
+### Set the right constants
 
-Set the CATEGORY variable in the script to the desired Google Maps category (e.g., "Alps driving roads"). This category must already exist in your Google Maps.
+- Set the LIST_NAME variable in the script to the desired Google Maps category (e.g., "Alps driving roads"). This saved list must already exist in your Google Maps.
+- Set the LIST_INDEX to the index of the list in the "save location" dropdown. It's 0-indexed.
+- Set CHROME_PROFILE_PATH to the path of your Chrome profile.
+- Set CHROME_PROFILE_DIRECTORY to the name of your Chrome profile directory.
+- Set CSV_FILE_PATH to the path of your CSV file.
 
 ### Run the Script:
 Execute the script using Python:
 thon selenium_test.py
 
+```bash
 python3 selenium_test.py
+```
 
 ## Error Logging:
-If any errors occur during the process, they will be logged in the error_log.txt file.
+If any errors occur during the process, they will be logged in the `error_log.txt` file.
 
 ## Notes:
 - The script uses undetected-chromedriver to bypass bot detection mechanisms on Google Maps.
 - Ensure your Chrome browser is not running when the script starts, as it will attach to the specified Chrome profile.
-- The script includes a delay (time.sleep) to handle animations or transitions on the Google Maps interface. You can try to remove it if you want.
+- The script includes a delay (`time.sleep`) to handle animations or transitions on the Google Maps interface. You can try to remove it if you want.
